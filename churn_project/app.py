@@ -17,7 +17,16 @@ def get_raw(file):
 
 st.sidebar.title("🏦 Churn Analytics")
 up = st.sidebar.file_uploader("Upload dataset (optional)", type="csv")
-raw, checks = get_raw(up if up else "data/European_Bank.csv")
+from pathlib import Path
+HERE = Path(__file__).resolve().parent
+CANDIDATES = [HERE / "data" / "European_Bank.csv", HERE / "European_Bank.csv", HERE.parent / "data" / "European_Bank.csv",
+              HERE.parent / "European_Bank.csv", Path.cwd() / "data" / "European_Bank.csv", Path.cwd() / "European_Bank.csv"]
+default_csv = next((p for p in CANDIDATES if p.exists()), None)
+if up is None and default_csv is None:
+    st.title("🏦 Churn Analytics")
+    st.error("European_Bank.csv was not found in the repository. Upload it in the sidebar, or add it to a `data/` folder next to app.py and push it to GitHub.")
+    st.stop()
+raw, checks = get_raw(up if up else str(default_csv))
 hv_q = st.sidebar.slider("High-value = balance in top …%", 5, 50, 25, 5, help="Customers whose balance is in the top X% of all customers") / 100
 data, hv_thr, _ = prepare(raw, 1 - hv_q)
 
