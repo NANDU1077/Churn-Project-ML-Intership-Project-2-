@@ -3,13 +3,6 @@ import json, warnings
 import numpy as np, pandas as pd
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import make_pipeline
-from sklearn.inspection import permutation_importance
-from sklearn.metrics import roc_auc_score, classification_report, confusion_matrix, recall_score, precision_score
 from churn_utils import *
 warnings.filterwarnings("ignore")
 
@@ -118,23 +111,6 @@ combo = d.groupby(["Geography", "AgeGroup", "ActivityStatus"], observed=True).ag
 combo["rate"] *= 100; top = combo[combo.n >= 50].sort_values("rate", ascending=False).head(8).round(1)
 R["top_risk_combos"] = top.to_dict("records")
 
-# ---- 6. Predictive model (supporting analysis) ----
-feat = pd.get_dummies(d[["CreditScore", "Geography", "Gender", "Age", "Tenure", "Balance", "NumOfProducts", "HasCrCard", "IsActiveMember", "EstimatedSalary"]], drop_first=True)
-Xtr, Xte, ytr, yte = train_test_split(feat, d.Exited, test_size=.25, stratify=d.Exited, random_state=42)
-models = {"Logistic Regression": make_pipeline(StandardScaler(), LogisticRegression(max_iter=1000, class_weight="balanced")),
-          "Gradient Boosting": GradientBoostingClassifier(random_state=42, n_estimators=200, max_depth=3, learning_rate=.08)}
-R["models"] = {}
-for n, m in models.items():
-    m.fit(Xtr, ytr); p = m.predict_proba(Xte)[:, 1]; thr = .5 if n.startswith("Log") else .3
-    pred = (p >= thr).astype(int)
-    R["models"][n] = {"auc": roc_auc_score(yte, p), "cv_auc": cross_val_score(m, feat, d.Exited, cv=5, scoring="roc_auc").mean(),
-                      "recall": recall_score(yte, pred), "precision": precision_score(yte, pred), "threshold": thr}
-best = models["Gradient Boosting"]
-pi = permutation_importance(best, Xte, yte, scoring="roc_auc", n_repeats=8, random_state=42)
-imp = pd.Series(pi.importances_mean, index=feat.columns).sort_values()
-R["feature_importance"] = imp.sort_values(ascending=False).round(4).to_dict()
-fig, ax = plt.subplots(figsize=(7, 4.2)); ax.barh(imp.index, imp.values, color=NAVY); ax.set_title("Permutation importance (drop in AUC)"); fig.tight_layout(); fig.savefig(FIG + "08_importance.png"); plt.close()
-
 with open("reports/results.json", "w") as f: json.dump(R, f, indent=1, default=lambda o: o.item() if hasattr(o, "item") else str(o))
 d.to_csv("data/churn_segmented.csv", index=False)
-print(json.dumps({k: R[k] for k in ["high_value", "top_risk_combos", "models", "feature_importance", "salary_quartiles", "geo_gender", "geo_age", "activity_balance", "profile", "credit_card"]}, indent=1, default=str)[:7000])
+print(json.dumps({k: R[k] for k in ["high_value", "top_risk_combos", "salary_quartiles", "geo_gender", "geo_age", "activity_balance", "profile", "credit_card"]}, indent=1, default=str)[:7000])

@@ -1,0 +1,171 @@
+{
+ "models": {
+  "Logistic Regression": {
+   "cv_auc": 0.7614219793068434,
+   "cv_auc_std": 0.007826789446967755,
+   "cv_pr_auc": 0.4593984250286966,
+   "test_auc": 0.7851184949167127
+  },
+  "Random Forest": {
+   "cv_auc": 0.8569889457488044,
+   "cv_auc_std": 0.0032482853890479424,
+   "cv_pr_auc": 0.6678138833440757,
+   "test_auc": 0.8691469175138812
+  },
+  "Gradient Boosting (default)": {
+   "cv_auc": 0.8545834700943609,
+   "cv_auc_std": 0.0058482645978096045,
+   "cv_pr_auc": 0.6847891246462408,
+   "test_auc": 0.867806899219375
+  },
+  "Gradient Boosting (tuned)": {
+   "cv_auc": 0.862305701247163,
+   "cv_auc_std": 0.004550989969163428,
+   "cv_pr_auc": 0.6965567109886143,
+   "test_auc": 0.8784836281932745
+  }
+ },
+ "best_params": {
+  "min_samples_leaf": 20,
+  "max_leaf_nodes": 8,
+  "max_iter": 250,
+  "max_depth": 5,
+  "learning_rate": 0.05,
+  "l2_regularization": 5
+ },
+ "test": {
+  "auc": 0.8784836281932745,
+  "pr_auc": 0.7349428438252466,
+  "precision": 0.6361904761904762,
+  "recall": 0.656188605108055,
+  "f1": 0.6460348162475822,
+  "accuracy": 0.8536,
+  "threshold": 0.32,
+  "baseline_accuracy": 0.7964,
+  "tn": 1800,
+  "fp": 191,
+  "fn": 175,
+  "tp": 334,
+  "n_test": 2500,
+  "top_decile_churn_rate": 0.856,
+  "lift_top_decile": 4.2043222003929275
+ },
+ "feature_importance": {
+  "NumOfProducts": 0.1286,
+  "Age": 0.1213,
+  "IsActiveMember": 0.0292,
+  "Geography": 0.0219,
+  "Balance": 0.0132,
+  "Gender": 0.008,
+  "BalanceSalaryRatio": 0.0065,
+  "CreditScore": 0.0023,
+  "Tenure": 0.0002,
+  "HasCrCard": 0.0,
+  "IsZeroBalance": 0.0,
+  "EstimatedSalary": -0.0004,
+  "TenureAgeRatio": -0.0005
+ },
+ "silhouette": {
+  "3": 0.14480434197374809,
+  "4": 0.14898324223182124,
+  "5": 0.1551799256421396,
+  "6": 0.16463018847283947,
+  "7": 0.1573079612129883
+ },
+ "inertia": {
+  "2": 59855.601501354635,
+  "3": 53482.55029874922,
+  "4": 49559.91560433898,
+  "5": 46202.94205662705,
+  "6": 43665.74925419693,
+  "7": 41619.04056467107,
+  "8": 40001.22444087273
+ },
+ "k": 5,
+ "clusters": [
+  {
+   "Cluster": 4,
+   "Customers": 1035,
+   "ChurnRate": 35.36,
+   "Age": 60.58,
+   "Balance": 79358.3,
+   "Products": 1.43,
+   "Active": 0.84,
+   "CreditScore": 652.97,
+   "Salary": 93792.93,
+   "Label": "Older, mid-balance, active"
+  },
+  {
+   "Cluster": 1,
+   "Customers": 2621,
+   "ChurnRate": 28.0,
+   "Age": 37.61,
+   "Balance": 124571.83,
+   "Products": 1.25,
+   "Active": 0.0,
+   "CreditScore": 646.39,
+   "Salary": 102150.42,
+   "Label": "Mid-age, high-balance, inactive"
+  },
+  {
+   "Cluster": 3,
+   "Customers": 2061,
+   "ChurnRate": 20.52,
+   "Age": 36.57,
+   "Balance": 16659.35,
+   "Products": 1.89,
+   "Active": 0.0,
+   "CreditScore": 649.56,
+   "Salary": 99813.53,
+   "Label": "Mid-age, zero-balance, inactive, multi-product"
+  },
+  {
+   "Cluster": 2,
+   "Customers": 2478,
+   "ChurnRate": 12.83,
+   "Age": 35.38,
+   "Balance": 122556.26,
+   "Products": 1.31,
+   "Active": 1.0,
+   "CreditScore": 656.25,
+   "Salary": 100588.13,
+   "Label": "Young, high-balance, active"
+  },
+  {
+   "Cluster": 0,
+   "Customers": 1805,
+   "ChurnRate": 10.86,
+   "Age": 35.96,
+   "Balance": 10078.08,
+   "Products": 1.89,
+   "Active": 1.0,
+   "CreditScore": 648.39,
+   "Salary": 100342.04,
+   "Label": "Young, zero-balance, active, multi-product"
+  }
+ ],
+ "tiers": [
+  {
+   "RiskTier": "High",
+   "Customers": 1282,
+   "ActualChurn": 76.1
+  },
+  {
+   "RiskTier": "Low",
+   "Customers": 7003,
+   "ActualChurn": 7.2
+  },
+  {
+   "RiskTier": "Medium",
+   "Customers": 1715,
+   "ActualChurn": 32.5
+  }
+ ],
+ "n_train": 7500,
+ "n_features": 13,
+ "engineered": [
+  "BalanceSalaryRatio",
+  "TenureAgeRatio",
+  "IsZeroBalance"
+ ]
+}

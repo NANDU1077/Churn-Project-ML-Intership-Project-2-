@@ -24,9 +24,9 @@ function Tbl(head, rows, widths) {
   const total = widths.reduce((a, b) => a + b, 0);
   const cell = (t, i, hd) => new TableCell({ borders, width: { size: widths[i], type: WidthType.DXA }, margins: { top: 60, bottom: 60, left: 100, right: 100 },
     shading: hd ? { fill: NAVY, type: ShadingType.CLEAR, color: "auto" } : undefined,
-    children: [new Paragraph({ alignment: i === 0 ? AlignmentType.LEFT : AlignmentType.CENTER, children: [new TextRun({ text: String(t), bold: hd, color: hd ? "FFFFFF" : "000000", size: 19 })] })] });
+    children: [new Paragraph({ keepNext: true, alignment: i === 0 ? AlignmentType.LEFT : AlignmentType.CENTER, children: [new TextRun({ text: String(t), bold: hd, color: hd ? "FFFFFF" : "000000", size: 19 })] })] });
   return new Table({ width: { size: total, type: WidthType.DXA }, columnWidths: widths,
-    rows: [new TableRow({ tableHeader: true, children: head.map((h, i) => cell(h, i, true)) }), ...rows.map(r => new TableRow({ children: r.map((c, i) => cell(c, i, false)) }))] });
+    rows: [new TableRow({ tableHeader: true, cantSplit: true, children: head.map((h, i) => cell(h, i, true)) }), ...rows.map(r => new TableRow({ cantSplit: true, children: r.map((c, i) => cell(c, i, false)) }))] });
 }
 const spacer = () => new Paragraph({ spacing: { after: 120 }, children: [] });
 const styles = {
@@ -50,7 +50,7 @@ const p1 = seg("Products Held", "1"), p2 = seg("Products Held", "2"), p3 = seg("
 const inact = seg("Active Member", "Inactive"), act = seg("Active Member", "Active");
 const fem = seg("Gender", "Female"), male = seg("Gender", "Male");
 const top = R.top_risk_combos[0];
-const gb = R.models["Gradient Boosting"], lr = R.models["Logistic Regression"];
+const M = JSON.parse(fs.readFileSync("reports/ml_results.json")); const MT = M.test; const gb = { auc: MT.auc };
 const segRows = n => R.segments[n].map(s => [s.Segment, s.Customers.toLocaleString(), s.Churned.toLocaleString(), pct(s.ChurnRate), pct(s.ContributionToChurn), s.RelativeRisk.toFixed(2) + "x"]);
 const segHead = ["Segment", "Customers", "Churned", "Churn rate", "Share of churn", "Relative risk"], segW = [2226, 1300, 1200, 1400, 1500, 1400];
 const eur = v => "€" + (v / 1e6).toFixed(1) + "m";
@@ -61,12 +61,12 @@ const paper = [
   new Paragraph({ style: "Title", children: [new TextRun("Customer Segmentation & Churn Pattern Analytics in European Banking")] }),
   new Paragraph({ spacing: { after: 400 }, border: { bottom: { style: BorderStyle.SINGLE, size: 12, color: NAVY, space: 8 } }, children: [new TextRun({ text: "Exploratory data analysis, segment insights, predictive risk scoring and retention recommendations", size: 26, color: "444444" })] }),
   P("**Dataset:** European Bank customer file, 10,000 customers across France, Spain and Germany"),
-  P("**Deliverables:** this paper · Streamlit dashboard (app.py) · Executive summary"),
+  P("**Deliverables:** this paper · Streamlit dashboard (app.py) · ML pipeline (ml_pipeline.py) · Executive summary"),
   P("**Prepared for:** Unified Mentor – Machine Learning project submission"),
   new Paragraph({ children: [new PageBreak()] }),
 
   H1("Abstract"),
-  P(`Customer churn is a major hidden cost in retail banking. This study analyses ${K.customers.toLocaleString()} customers of a European retail bank to establish who leaves, where, and how much value leaves with them. The overall churn rate is **${pct(K.overall_churn_rate, 2)}** (${K.churned.toLocaleString()} customers). Churn is far from uniform: Germany churns at **${pct(ger.ChurnRate)}** versus ${pct(fra.ChurnRate)} in France and ${pct(spa.ChurnRate)} in Spain; customers aged 46–60 churn at **${pct(a46.ChurnRate)}**; inactive members churn at ${pct(inact.ChurnRate)} versus ${pct(act.ChurnRate)} for active members; and customers holding 3 or 4 products churn at ${pct(p3.ChurnRate)} and ${pct(p4.ChurnRate)}. Credit score, tenure, salary and credit-card ownership show almost no relationship with churn. High-value customers (top 25% by balance) churn at ${pct(HV.churn_rate)} and account for **${pct(HV.share_of_total_churned_balance, 0)} of all balances lost**. A gradient-boosting model reaches an out-of-sample AUC of ${gb.auc.toFixed(2)}, confirming that age, product count, activity, balance and geography carry the predictive signal. The paper ends with targeted, segment-level retention recommendations.`),
+  P(`Customer churn is a major hidden cost in retail banking. This study analyses ${K.customers.toLocaleString()} customers of a European retail bank to establish who leaves, where, and how much value leaves with them. The overall churn rate is **${pct(K.overall_churn_rate, 2)}** (${K.churned.toLocaleString()} customers). Churn is far from uniform: Germany churns at **${pct(ger.ChurnRate)}** versus ${pct(fra.ChurnRate)} in France and ${pct(spa.ChurnRate)} in Spain; customers aged 46–60 churn at **${pct(a46.ChurnRate)}**; inactive members churn at ${pct(inact.ChurnRate)} versus ${pct(act.ChurnRate)} for active members; and customers holding 3 or 4 products churn at ${pct(p3.ChurnRate)} and ${pct(p4.ChurnRate)}. Credit score, tenure, salary and credit-card ownership show almost no relationship with churn. High-value customers (top 25% by balance) churn at ${pct(HV.churn_rate)} and account for **${pct(HV.share_of_total_churned_balance, 0)} of all balances lost**. A tuned gradient-boosting model, selected by cross-validation, reaches a held-out ROC-AUC of ${gb.auc.toFixed(2)} and finds 4.2 times more churners in its top-risk decile than random targeting; its feature importance confirms that product count, age, activity, geography and balance carry the signal. The paper ends with targeted, segment-level retention recommendations.`),
 
   H1("1. Background and Context"),
   P("Losing existing customers reduces lifetime value, raises acquisition costs and makes revenue unstable. Banks usually track a single headline churn rate, but that figure cannot say which customer groups are most at risk, how churn differs by country, age or financial profile, or whether churn is concentrated among high-value or low-value customers. Without that granularity, retention strategies remain generic, reactive and inefficient. This project closes that gap with a systematic, segmentation-driven analysis."),
@@ -75,7 +75,7 @@ const paper = [
   H2("2.1 Primary objectives"),
   B("Measure the overall churn rate."), B("Identify how churn is distributed across customer segments."), B("Compare churn behaviour across European regions."),
   H2("2.2 Secondary objectives"),
-  B("Understand churn among high-value customers."), B("Evaluate engagement and tenure patterns."), B("Support strategic planning and marketing decisions."),
+  B("Understand churn among high-value customers."), B("Evaluate engagement and tenure patterns."), B("Support strategic planning and marketing decisions."), B("Build and validate a machine-learning model that predicts individual churn risk, and discover data-driven customer clusters."),
 
   H1("3. Data Description and Validation"),
   P("The dataset contains one row per customer with 14 fields: CustomerId, Surname, CreditScore, Geography, Gender, Age, Tenure, Balance, NumOfProducts, HasCrCard, IsActiveMember, EstimatedSalary, Exited (target) and a constant Year field (2025). Because the data is a single snapshot, all findings describe associations at one point in time."),
@@ -88,7 +88,7 @@ const paper = [
   spacer(), P("The data passed every check. No imputation or row removal was needed. Surname (non-analytical, personal) and Year (constant) were dropped before analysis."),
 
   H1("4. Analytical Methodology"),
-  P("The workflow follows the brief: ingestion and validation, cleaning and preparation, segmentation design, churn distribution analysis, comparative demographic analysis, high-value customer analysis, and KPI computation. A predictive model was added as supporting evidence. All logic lives in churn_utils.py and analysis.py so results are reproducible."),
+  P("The workflow follows the brief: ingestion and validation, cleaning and preparation, segmentation design, churn distribution analysis, comparative demographic analysis, high-value customer analysis, and KPI computation. A machine-learning layer (feature engineering, model comparison with cross-validation, hyper-parameter tuning, threshold selection, held-out evaluation, explainability and K-Means clustering) turns the segment findings into customer-level risk scores. All logic lives in churn_utils.py and analysis.py so results are reproducible."),
   H2("4.1 Segmentation design"),
   Tbl(["Dimension", "Segments", "Rule"], [
     ["Geography", "France, Spain, Germany", "As recorded"], ["Age", "<30, 30–45, 46–60, 60+", "Age in years"],
@@ -159,14 +159,31 @@ const paper = [
   ], [2700, 2600, 3726]),
   Cap("Table 4 – Key performance indicators"),
 
-  H2("5.9 Predictive model (supporting analysis)"),
-  P(`To check that the segment patterns hold up jointly and to enable customer-level targeting, two classifiers were trained on a stratified 75/25 split with Geography and Gender one-hot encoded. Gradient boosting clearly outperforms logistic regression, which implies non-linear effects such as the age and product patterns above.`),
-  Tbl(["Model", "Test AUC", "5-fold CV AUC", "Recall", "Precision", "Threshold"], [
-    ["Logistic Regression", lr.auc.toFixed(3), lr.cv_auc.toFixed(3), pct(lr.recall * 100, 0), pct(lr.precision * 100, 0), lr.threshold],
-    ["Gradient Boosting", gb.auc.toFixed(3), gb.cv_auc.toFixed(3), pct(gb.recall * 100, 0), pct(gb.precision * 100, 0), gb.threshold]], [2326, 1300, 1600, 1200, 1300, 1300]),
-  Cap("Table 5 – Model performance on held-out data"),
-  Img("figures/08_importance.png", 420), Cap("Figure 7 – Permutation importance (drop in test AUC when a feature is shuffled)"),
-  P(`The most important drivers are **age** and **number of products**, followed by **activity status**, **balance** and **Germany**. Salary, tenure, credit score and credit card ownership contribute essentially nothing, which agrees with the segment analysis.`),
+  H2("5.9 Machine-learning model for churn prediction"),
+  P(`The segment analysis explains where churn concentrates; a supervised model turns that into a customer-level risk score. The data was split 75/25 with stratification (${M.n_train.toLocaleString()} training, ${MT.n_test.toLocaleString()} test customers). Scaling and one-hot encoding sit inside a scikit-learn Pipeline so they are fitted only on training folds, which prevents data leakage. Three features were engineered: balance-to-salary ratio, tenure-to-age ratio and a zero-balance flag (${M.n_features} model inputs in total).`),
+  P("**Model selection.** Four candidates were compared with stratified 5-fold cross-validation on the training set. Because churners are only about 20% of customers, PR-AUC is reported alongside ROC-AUC."),
+  Tbl(["Model", "CV ROC-AUC (± std)", "CV PR-AUC", "Test ROC-AUC"], Object.entries(M.models).map(([n, v]) => [n, `${v.cv_auc.toFixed(3)} ± ${v.cv_auc_std.toFixed(3)}`, v.cv_pr_auc.toFixed(3), v.test_auc.toFixed(3)]), [3126, 2300, 1700, 1900]),
+  Cap("Table 5 – Model comparison"),
+  P(`Tree-based models clearly beat logistic regression, indicating non-linear effects such as the age and product-count patterns found in Section 5.2. Gradient boosting was then tuned with a randomised search (25 configurations × 5 folds; best: learning rate ${M.best_params.learning_rate}, max depth ${M.best_params.max_depth}, ${M.best_params.max_leaf_nodes} leaves, ${M.best_params.max_iter} iterations, L2 = ${M.best_params.l2_regularization}), lifting CV AUC to ${M.models["Gradient Boosting (tuned)"].cv_auc.toFixed(3)}.`),
+  P(`**Decision threshold.** Rather than the default 0.5, the threshold (${MT.threshold}) was chosen by maximising F1 on out-of-fold predictions from the training data only, so the test set stays untouched.`),
+  Tbl(["Test metric", "Value"], [["ROC-AUC", MT.auc.toFixed(3)], ["PR-AUC", MT.pr_auc.toFixed(3)], ["Recall (churners caught)", pct(MT.recall * 100)], ["Precision (flags that are correct)", pct(MT.precision * 100)],
+    ["F1-score", MT.f1.toFixed(3)], ["Accuracy (vs " + pct(MT.baseline_accuracy * 100) + " for always predicting 'stay')", pct(MT.accuracy * 100)], ["Top-decile churn rate / lift", `${pct(MT.top_decile_churn_rate * 100)} / ${MT.lift_top_decile.toFixed(1)}x`]], [5600, 3426]),
+  Cap("Table 6 – Held-out test performance of the tuned gradient-boosting model"),
+  Img("figures/09_model_eval.png", 600), Cap("Figure 7 – ROC curve, precision-recall curve and confusion matrix on the test set"),
+  P(`On the test set the model correctly identifies ${MT.tp} of ${MT.tp + MT.fn} churners (${pct(MT.recall * 100, 0)}) with ${MT.fp} false alarms. The ${MT.n_test / 10} customers it ranks as riskiest churn at ${pct(MT.top_decile_churn_rate * 100, 0)}, ${MT.lift_top_decile.toFixed(1)} times the base rate, so a retention team contacting only the top 10% would reach a far higher share of genuine churners than random outreach.`),
+  P("**Explainability.** Permutation importance on held-out data measures how much AUC drops when a feature is shuffled."),
+  Img("figures/08_importance.png", 400), Cap("Figure 8 – Permutation feature importance"),
+  P(`**Number of products** and **age** dominate, followed by **activity status**, **geography** and **balance**. Salary, tenure, credit card ownership and the other engineered ratios add essentially nothing, which agrees with the segment analysis in Sections 5.2 to 5.6. Two independent methods therefore reach the same conclusion.`),
+  P("**Calibration of risk tiers.** Every customer was scored out-of-fold (by a model that never saw them) and grouped into tiers. Actual churn rises steeply with the tier, which shows the scores are usable for prioritisation."),
+  Tbl(["Risk tier", "Customers", "Actual churn rate"], ["Low", "Medium", "High"].map(t => { const r = M.tiers.find(x => x.RiskTier === t); return [t + (t === "Low" ? " (<20%)" : t === "Medium" ? " (20–50%)" : " (>50%)"), r.Customers.toLocaleString(), pct(r.ActualChurn)]; }), [3626, 2700, 2700]),
+  Cap("Table 7 – Actual churn by predicted risk tier (out-of-fold)"),
+
+  H2("5.10 Unsupervised segmentation with K-Means"),
+  P(`Section 5.2 used rule-based segments. To check for natural groupings, K-Means was run on seven standardised variables (age, balance, products, activity, credit score, tenure, salary). The silhouette score was nearly flat across k = 3 to 7 (${Object.values(M.silhouette).map(v => v.toFixed(2)).join(", ")}), meaning customers form overlapping groups rather than sharply separated clusters; k = ${M.k} was chosen for interpretability. The clusters should therefore be read as descriptive personas, not hard categories.`),
+  Tbl(["Cluster profile", "Customers", "Churn rate", "Avg age", "Avg products"], M.clusters.map(c => [`C${c.Cluster}: ${c.Label}`, c.Customers.toLocaleString(), pct(c.ChurnRate), c.Age.toFixed(0), c.Products.toFixed(1)]), [4026, 1200, 1300, 1200, 1300]),
+  Cap("Table 8 – K-Means customer clusters, sorted by churn rate"),
+  Img("figures/10_clusters.png", 590), Cap("Figure 9 – Cluster projection and churn rate by cluster"),
+  P(`The highest-churn cluster (${pct(M.clusters[0].ChurnRate)}) is older, active customers with mid-sized balances (average age ${M.clusters[0].Age.toFixed(0)}), matching the 46–60 finding. The second (${pct(M.clusters[1].ChurnRate)}) is inactive, high-balance customers, the most valuable at-risk group. Young, active customers are the most loyal (${pct(M.clusters[4].ChurnRate)} to ${pct(M.clusters[3].ChurnRate)}).`),
 
   H1("6. Recommendations"),
   B(`**Launch a Germany retention programme.** Germany has ${pct(ger.ChurnRate, 0)} churn, 1.6x average risk, and the largest share of high-value losses. Investigate local competition, pricing and service quality before choosing the intervention.`),
@@ -183,7 +200,7 @@ const paper = [
   B(`The 3-product and 4-product groups contain only ${p3.Customers} and ${p4.Customers} customers; results for them are indicative.`),
   B("Balance is used as a proxy for customer value because revenue and margin data are not available; true lifetime value may differ."),
   B("Credit-score and tenure cut-offs and the top-25% high-value threshold are analyst choices; the dashboard lets users vary the high-value threshold."),
-  B("Model precision is moderate; the model should support prioritisation, not automatic decisions about individual customers."),
+  B("Model precision is moderate (about 64%); the model should support prioritisation, not automatic decisions about individual customers. The dataset has no time dimension, so the model cannot be validated on future data."),B("K-Means clusters overlap (low silhouette) and are descriptive rather than definitive."),
 
   H1("8. Conclusion"),
   P(`Churn in this bank is concentrated, not general. A small number of identifiable segments (German customers, those aged 46–60, inactive members and customers with 3–4 products) generate a disproportionate share of exits, while income, credit score and tenure matter little. High-value churn is a material revenue risk, with ${eur(HV.balance_lost)} of balances lost from just ${HV.churned} customers. Targeting retention at these segments, rather than at the customer base as a whole, is the most efficient route to reducing churn, and the accompanying dashboard lets decision-makers explore every cut of the data themselves.`),
@@ -200,7 +217,7 @@ const exec = [
     kpiBox(pct(K.overall_churn_rate), "Overall churn rate"), kpiBox(pct(ger.ChurnRate, 0), "Germany churn (FR/ES ~16%)"), kpiBox(pct(a46.ChurnRate, 0), "Churn, ages 46–60"),
     kpiBox(K.engagement_drop_indicator.toFixed(1) + "x", "Inactive vs active members"), kpiBox(eur(HV.balance_lost), "Balance lost, high-value")] })] }),
   H1("Purpose"),
-  P(`This summary reports what a segmentation analysis of ${K.customers.toLocaleString()} retail-bank customers in France, Spain and Germany reveals about customer churn, and what the bank should do about it.`),
+  P(`A segmentation and machine-learning analysis of ${K.customers.toLocaleString()} retail-bank customers in France, Spain and Germany: who churns, and what to do about it.`),
   H1("Key findings"),
   B(`**One in five customers leaves.** ${K.churned.toLocaleString()} of ${K.customers.toLocaleString()} customers exited (${pct(K.overall_churn_rate)}), taking ${eur(K.balance_at_risk)} in balances (${pct(K.balance_at_risk_pct, 0)} of the total).`),
   B(`**Germany is the hotspot.** Churn of ${pct(ger.ChurnRate)} is double that of France (${pct(fra.ChurnRate)}) and Spain (${pct(spa.ChurnRate)}), and Germany supplies ${pct(ger.ContributionToChurn, 0)} of all churners from a quarter of customers.`),
@@ -215,7 +232,7 @@ const exec = [
   B("Review the design, pricing and sales practices of 3–4 product bundles before further cross-selling."),
   B("Use the supplied risk-scoring model and dashboard to build outreach lists and to measure the effect of retention spending."),
   H1("Confidence and caveats"),
-  P(`Findings come from a single-year snapshot and show associations, not proven causes. Balance is used as a stand-in for customer value. A predictive model built on the same data achieves AUC ${gb.auc.toFixed(2)}, which is good enough to rank customers by risk but not to make individual decisions automatically. The accompanying research paper gives full method and detail; the interactive dashboard lets stakeholders explore any segment.`),
+  P(`Findings come from a single-year snapshot and show associations, not proven causes. Balance is used as a stand-in for customer value. A tuned machine-learning model achieves a held-out AUC of ${gb.auc.toFixed(2)}: customers it places in its highest-risk tier churn at 76%, against 7% in the lowest tier. That is good enough to rank customers for outreach but not to make individual decisions automatically. Full method is in the research paper; the dashboard lets stakeholders explore any segment.`),
 ];
 
 (async () => {

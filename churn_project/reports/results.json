@@ -563,34 +563,5 @@
    "churned": 19,
    "rate": 23.2
   }
- ],
- "models": {
-  "Logistic Regression": {
-   "auc": 0.7871808205687874,
-   "cv_auc": 0.7690862015640193,
-   "recall": 0.7210216110019646,
-   "precision": 0.39675675675675676,
-   "threshold": 0.5
-  },
-  "Gradient Boosting": {
-   "auc": 0.8760581753450447,
-   "cv_auc": 0.8647527748189253,
-   "recall": 0.6620825147347741,
-   "precision": 0.6310861423220974,
-   "threshold": 0.3
-  }
- },
- "feature_importance": {
-  "Age": 0.1298,
-  "NumOfProducts": 0.1221,
-  "IsActiveMember": 0.0304,
-  "Balance": 0.0301,
-  "Geography_Germany": 0.0218,
-  "Gender_Male": 0.0083,
-  "CreditScore": 0.0019,
-  "Tenure": 0.0001,
-  "HasCrCard": -0.0001,
-  "Geography_Spain": -0.0003,
-  "EstimatedSalary": -0.0016
- }
+ ]
 }

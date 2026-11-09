@@ -82,3 +82,18 @@ def kpis(d):
     }
     out["balance_at_risk_pct"] = out["balance_at_risk"] / out["balance_total"] * 100 if out["balance_total"] else np.nan
     return out
+
+
+ML_NUM = ["CreditScore", "Age", "Tenure", "Balance", "NumOfProducts", "EstimatedSalary", "BalanceSalaryRatio", "TenureAgeRatio"]
+ML_BIN = ["HasCrCard", "IsActiveMember", "IsZeroBalance"]
+ML_CAT = ["Geography", "Gender"]
+ML_FEATURES = ML_NUM + ML_BIN + ML_CAT
+
+
+def add_features(df):
+    """Feature engineering for the ML models (works on raw or prepared frames)."""
+    f = df.copy()
+    f["BalanceSalaryRatio"] = f.Balance / (f.EstimatedSalary + 1)
+    f["TenureAgeRatio"] = f.Tenure / f.Age
+    f["IsZeroBalance"] = (f.Balance == 0).astype(int)
+    return f[ML_FEATURES]

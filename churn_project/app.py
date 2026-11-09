@@ -149,22 +149,46 @@ with t5:
     st.dataframe(combo[combo.Customers >= min_n].sort_values("ChurnRate", ascending=False).head(12).round(1), width="stretch", hide_index=True)
 
 with t6:
-    st.markdown("A gradient-boosting model trained on the full dataset ranks customers by churn probability, so retention teams can prioritise outreach.")
-    @st.cache_resource
-    def train(file_key, n):
-        from sklearn.ensemble import GradientBoostingClassifier
-        X = pd.get_dummies(data[["CreditScore", "Geography", "Gender", "Age", "Tenure", "Balance", "NumOfProducts", "HasCrCard", "IsActiveMember", "EstimatedSalary"]], drop_first=True)
-        return GradientBoostingClassifier(random_state=42, n_estimators=200, max_depth=3, learning_rate=.08).fit(X, data.Exited), list(X.columns)
-    model, cols = train(str(up.name if up else "default"), len(data))
-    X = pd.get_dummies(d[["CreditScore", "Geography", "Gender", "Age", "Tenure", "Balance", "NumOfProducts", "HasCrCard", "IsActiveMember", "EstimatedSalary"]], drop_first=True).reindex(columns=cols, fill_value=0)
-    sc = d.assign(ChurnProbability=model.predict_proba(X)[:, 1])
-    sc["RiskTier"] = pd.cut(sc.ChurnProbability, [-.01, .2, .5, 1], labels=["Low", "Medium", "High"])
-    tier = sc.groupby("RiskTier", observed=True).agg(Customers=("Exited", "size"), ActualChurnRate=("Exited", "mean"), BalanceAtStake=("Balance", "sum")).reset_index()
-    tier["ActualChurnRate"] *= 100
-    c1, c2 = st.columns(2)
-    c1.plotly_chart(px.bar(tier, x="RiskTier", y="Customers", color="RiskTier", color_discrete_map={"Low": "#2A9D8F", "Medium": "#F4D35E", "High": RED}, title="Customers by predicted risk tier"), width="stretch")
-    c2.dataframe(tier.round(1), width="stretch", hide_index=True)
-    st.caption("Note: scores are in-sample (model trained on the same data) and shown for prioritisation; out-of-sample AUC is reported in the research paper.")
-    st.subheader("Top 100 at-risk customers still with the bank")
-    st.dataframe(sc[sc.Exited == 0].sort_values("ChurnProbability", ascending=False).head(100)[["CustomerId", "Geography", "Age", "NumOfProducts", "IsActiveMember", "Balance", "ChurnProbability"]].round(3), width="stretch", hide_index=True)
-    st.download_button("⬇ Download scored customers (CSV)", sc.drop(columns=["Status"]).to_csv(index=False), "scored_customers.csv", "text/csv")
+    import json, joblib
+    ML_JSON, SCORES, MODEL = HERE / "reports" / "ml_results.json", HERE / "data" / "scored_customers.csv", HERE / "data" / "churn_model.joblib"
+    if not (ML_JSON.exists() and SCORES.exists() and MODEL.exists()):
+        st.info("Run `python ml_pipeline.py` once to generate the model files (reports/ml_results.json, data/scored_customers.csv, data/churn_model.joblib), then refresh.")
+    else:
+        ML = json.loads(ML_JSON.read_text()); T = ML["test"]
+        st.markdown("**Model:** tuned Gradient Boosting, selected from 4 candidates by 5-fold cross-validation. Scores below are **out-of-fold** (each customer is scored by a model that never saw them), so they are not inflated by training on the same data.")
+        c = st.columns(5)
+        c[0].metric("Test ROC-AUC", f"{T['auc']:.3f}"); c[1].metric("PR-AUC", f"{T['pr_auc']:.3f}"); c[2].metric("Recall", f"{T['recall'] * 100:.0f}%")
+        c[3].metric("Precision", f"{T['precision'] * 100:.0f}%"); c[4].metric("Top-decile lift", f"{T['lift_top_decile']:.1f}x")
+        m1, m2 = st.tabs(["Risk tiers & priority list", "What-if predictor"])
+        with m1:
+            sc = d.merge(pd.read_csv(SCORES)[["CustomerId", "ChurnProbability", "RiskTier", "Cluster"]], on="CustomerId", how="left").dropna(subset=["ChurnProbability"])
+            tier = sc.groupby("RiskTier").agg(Customers=("Exited", "size"), ActualChurnRate=("Exited", "mean"), BalanceAtStake=("Balance", "sum")).reindex(["Low", "Medium", "High"]).dropna().reset_index()
+            tier["ActualChurnRate"] *= 100
+            c1, c2 = st.columns(2)
+            c1.plotly_chart(px.bar(tier, x="RiskTier", y="ActualChurnRate", color="RiskTier", text_auto=".1f", color_discrete_map={"Low": "#2A9D8F", "Medium": "#F4D35E", "High": RED},
+                                   title="Actual churn rate by predicted risk tier (%)"), width="stretch")
+            c2.dataframe(tier.round(1), width="stretch", hide_index=True)
+            st.subheader("Data-driven customer clusters (K-Means)")
+            cl = pd.DataFrame(ML["clusters"]).rename(columns={"ChurnRate": "Churn %"})[["Cluster", "Label", "Customers", "Churn %", "Age", "Balance", "Products", "Active"]]
+            st.dataframe(cl.round(1), width="stretch", hide_index=True)
+            st.subheader("Top 100 at-risk customers still with the bank")
+            st.dataframe(sc[sc.Exited == 0].sort_values("ChurnProbability", ascending=False).head(100)[["CustomerId", "Geography", "Age", "NumOfProducts", "IsActiveMember", "Balance", "ChurnProbability", "RiskTier"]].round(3),
+                         width="stretch", hide_index=True)
+            st.download_button("⬇ Download scored customers (CSV)", sc.to_csv(index=False), "scored_customers.csv", "text/csv")
+        with m2:
+            st.caption("Enter a customer profile to get a churn probability from the trained model.")
+            a, b, c3 = st.columns(3)
+            geo = a.selectbox("Geography", ["France", "Spain", "Germany"]); gen = a.selectbox("Gender", ["Female", "Male"])
+            age = b.slider("Age", 18, 92, 45); ten = b.slider("Tenure (years)", 0, 10, 5)
+            bal = c3.number_input("Balance (€)", 0.0, 300000.0, 100000.0, 5000.0); sal = c3.number_input("Estimated salary (€)", 0.0, 250000.0, 100000.0, 5000.0)
+            a2, b2, c4 = st.columns(3)
+            npr = a2.selectbox("Number of products", [1, 2, 3, 4], 0); cs = b2.slider("Credit score", 350, 850, 650)
+            act_ = c4.checkbox("Active member", True); card = c4.checkbox("Has credit card", True)
+            pack = joblib.load(MODEL)
+            row = pd.DataFrame([dict(CreditScore=cs, Geography=geo, Gender=gen, Age=age, Tenure=ten, Balance=bal, NumOfProducts=npr, HasCrCard=int(card), IsActiveMember=int(act_), EstimatedSalary=sal)])
+            prob = float(pack["model"].predict_proba(add_features(row))[0, 1])
+            tier_ = "High" if prob > .5 else "Medium" if prob > .2 else "Low"
+            g = go.Figure(go.Indicator(mode="gauge+number", value=prob * 100, number={"suffix": "%"}, title={"text": f"Churn probability · {tier_} risk"},
+                                       gauge={"axis": {"range": [0, 100]}, "bar": {"color": RED if tier_ == "High" else "#F4A261" if tier_ == "Medium" else "#2A9D8F"},
+                                              "steps": [{"range": [0, 20], "color": "#E8F5F3"}, {"range": [20, 50], "color": "#FFF6DA"}, {"range": [50, 100], "color": "#FBE3E0"}]}))
+            g.update_layout(height=300, margin=dict(t=60, b=10)); st.plotly_chart(g, width="stretch")
