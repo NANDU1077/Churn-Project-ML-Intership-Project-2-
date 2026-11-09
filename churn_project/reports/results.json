@@ -1,0 +1,596 @@
+{
+ "validation": {
+  "rows": 10000,
+  "columns": 14,
+  "missing_values": 0,
+  "duplicate_customers": 0,
+  "binary_fields_valid": true,
+  "products_range": [
+   1,
+   4
+  ],
+  "geographies": [
+   "France",
+   "Germany",
+   "Spain"
+  ],
+  "churn_label_values": [
+   0,
+   1
+  ]
+ },
+ "kpis": {
+  "overall_churn_rate": 20.369999999999997,
+  "customers": 10000,
+  "churned": 2037,
+  "high_value_churn_rate": 23.68,
+  "non_high_value_churn_rate": 19.26666666666667,
+  "high_value_churn_ratio": 1.2290657439446366,
+  "inactive_churn_rate": 26.850897092183956,
+  "active_churn_rate": 14.269073966220153,
+  "engagement_drop_indicator": 1.8817547064195856,
+  "geographic_risk_index": {
+   "France": 79.30666005582015,
+   "Germany": 159.26953590539938,
+   "Spain": 81.85270120850657
+  },
+  "balance_at_risk": 185588094.63,
+  "balance_total": 764858892.88,
+  "balance_at_risk_pct": 24.264357302715865
+ },
+ "hv_threshold": 127644.24,
+ "median_nonzero_balance": 119839.69,
+ "segments": {
+  "Geography": [
+   {
+    "Segment": "France",
+    "Customers": 5014,
+    "Churned": 810,
+    "ChurnRate": 16.15,
+    "ShareOfCustomers": 50.14,
+    "ContributionToChurn": 39.76,
+    "RelativeRisk": 0.79
+   },
+   {
+    "Segment": "Germany",
+    "Customers": 2509,
+    "Churned": 814,
+    "ChurnRate": 32.44,
+    "ShareOfCustomers": 25.09,
+    "ContributionToChurn": 39.96,
+    "RelativeRisk": 1.59
+   },
+   {
+    "Segment": "Spain",
+    "Customers": 2477,
+    "Churned": 413,
+    "ChurnRate": 16.67,
+    "ShareOfCustomers": 24.77,
+    "ContributionToChurn": 20.27,
+    "RelativeRisk": 0.82
+   }
+  ],
+  "Gender": [
+   {
+    "Segment": "Female",
+    "Customers": 4543,
+    "Churned": 1139,
+    "ChurnRate": 25.07,
+    "ShareOfCustomers": 45.43,
+    "ContributionToChurn": 55.92,
+    "RelativeRisk": 1.23
+   },
+   {
+    "Segment": "Male",
+    "Customers": 5457,
+    "Churned": 898,
+    "ChurnRate": 16.46,
+    "ShareOfCustomers": 54.57,
+    "ContributionToChurn": 44.08,
+    "RelativeRisk": 0.81
+   }
+  ],
+  "Age Group": [
+   {
+    "Segment": "<30",
+    "Customers": 1641,
+    "Churned": 124,
+    "ChurnRate": 7.56,
+    "ShareOfCustomers": 16.41,
+    "ContributionToChurn": 6.09,
+    "RelativeRisk": 0.37
+   },
+   {
+    "Segment": "30-45",
+    "Customers": 6248,
+    "Churned": 956,
+    "ChurnRate": 15.3,
+    "ShareOfCustomers": 62.48,
+    "ContributionToChurn": 46.93,
+    "RelativeRisk": 0.75
+   },
+   {
+    "Segment": "46-60",
+    "Customers": 1647,
+    "Churned": 842,
+    "ChurnRate": 51.12,
+    "ShareOfCustomers": 16.47,
+    "ContributionToChurn": 41.34,
+    "RelativeRisk": 2.51
+   },
+   {
+    "Segment": "60+",
+    "Customers": 464,
+    "Churned": 115,
+    "ChurnRate": 24.78,
+    "ShareOfCustomers": 4.64,
+    "ContributionToChurn": 5.65,
+    "RelativeRisk": 1.22
+   }
+  ],
+  "Credit Score Band": [
+   {
+    "Segment": "Low",
+    "Customers": 2362,
+    "Churned": 520,
+    "ChurnRate": 22.02,
+    "ShareOfCustomers": 23.62,
+    "ContributionToChurn": 25.53,
+    "RelativeRisk": 1.08
+   },
+   {
+    "Segment": "Medium",
+    "Customers": 5759,
+    "Churned": 1137,
+    "ChurnRate": 19.74,
+    "ShareOfCustomers": 57.59,
+    "ContributionToChurn": 55.82,
+    "RelativeRisk": 0.97
+   },
+   {
+    "Segment": "High",
+    "Customers": 1879,
+    "Churned": 380,
+    "ChurnRate": 20.22,
+    "ShareOfCustomers": 18.79,
+    "ContributionToChurn": 18.65,
+    "RelativeRisk": 0.99
+   }
+  ],
+  "Tenure Group": [
+   {
+    "Segment": "New (0-2y)",
+    "Customers": 2496,
+    "Churned": 528,
+    "ChurnRate": 21.15,
+    "ShareOfCustomers": 24.96,
+    "ContributionToChurn": 25.92,
+    "RelativeRisk": 1.04
+   },
+   {
+    "Segment": "Mid-term (3-6y)",
+    "Customers": 3977,
+    "Churned": 821,
+    "ChurnRate": 20.64,
+    "ShareOfCustomers": 39.77,
+    "ContributionToChurn": 40.3,
+    "RelativeRisk": 1.01
+   },
+   {
+    "Segment": "Long-term (7-10y)",
+    "Customers": 3527,
+    "Churned": 688,
+    "ChurnRate": 19.51,
+    "ShareOfCustomers": 35.27,
+    "ContributionToChurn": 33.78,
+    "RelativeRisk": 0.96
+   }
+  ],
+  "Balance Segment": [
+   {
+    "Segment": "Zero balance",
+    "Customers": 3617,
+    "Churned": 500,
+    "ChurnRate": 13.82,
+    "ShareOfCustomers": 36.17,
+    "ContributionToChurn": 24.55,
+    "RelativeRisk": 0.68
+   },
+   {
+    "Segment": "Low balance",
+    "Customers": 3192,
+    "Churned": 766,
+    "ChurnRate": 24.0,
+    "ShareOfCustomers": 31.92,
+    "ContributionToChurn": 37.6,
+    "RelativeRisk": 1.18
+   },
+   {
+    "Segment": "High balance",
+    "Customers": 3191,
+    "Churned": 771,
+    "ChurnRate": 24.16,
+    "ShareOfCustomers": 31.91,
+    "ContributionToChurn": 37.85,
+    "RelativeRisk": 1.19
+   }
+  ],
+  "Products Held": [
+   {
+    "Segment": "1",
+    "Customers": 5084,
+    "Churned": 1409,
+    "ChurnRate": 27.71,
+    "ShareOfCustomers": 50.84,
+    "ContributionToChurn": 69.17,
+    "RelativeRisk": 1.36
+   },
+   {
+    "Segment": "2",
+    "Customers": 4590,
+    "Churned": 348,
+    "ChurnRate": 7.58,
+    "ShareOfCustomers": 45.9,
+    "ContributionToChurn": 17.08,
+    "RelativeRisk": 0.37
+   },
+   {
+    "Segment": "3",
+    "Customers": 266,
+    "Churned": 220,
+    "ChurnRate": 82.71,
+    "ShareOfCustomers": 2.66,
+    "ContributionToChurn": 10.8,
+    "RelativeRisk": 4.06
+   },
+   {
+    "Segment": "4",
+    "Customers": 60,
+    "Churned": 60,
+    "ChurnRate": 100.0,
+    "ShareOfCustomers": 0.6,
+    "ContributionToChurn": 2.95,
+    "RelativeRisk": 4.91
+   }
+  ],
+  "Active Member": [
+   {
+    "Segment": "Active",
+    "Customers": 5151,
+    "Churned": 735,
+    "ChurnRate": 14.27,
+    "ShareOfCustomers": 51.51,
+    "ContributionToChurn": 36.08,
+    "RelativeRisk": 0.7
+   },
+   {
+    "Segment": "Inactive",
+    "Customers": 4849,
+    "Churned": 1302,
+    "ChurnRate": 26.85,
+    "ShareOfCustomers": 48.49,
+    "ContributionToChurn": 63.92,
+    "RelativeRisk": 1.32
+   }
+  ]
+ },
+ "profile": [
+  {
+   "Metric": "CreditScore",
+   "Churned": 645.35,
+   "Retained": 651.85,
+   "Diff_%": -1.0
+  },
+  {
+   "Metric": "Age",
+   "Churned": 44.84,
+   "Retained": 37.41,
+   "Diff_%": 19.9
+  },
+  {
+   "Metric": "Tenure",
+   "Churned": 4.93,
+   "Retained": 5.03,
+   "Diff_%": -2.0
+  },
+  {
+   "Metric": "Balance",
+   "Churned": 91108.54,
+   "Retained": 72745.3,
+   "Diff_%": 25.2
+  },
+  {
+   "Metric": "NumOfProducts",
+   "Churned": 1.48,
+   "Retained": 1.54,
+   "Diff_%": -3.9
+  },
+  {
+   "Metric": "EstimatedSalary",
+   "Churned": 101465.68,
+   "Retained": 99738.39,
+   "Diff_%": 1.7
+  },
+  {
+   "Metric": "IsActiveMember",
+   "Churned": 0.36,
+   "Retained": 0.55,
+   "Diff_%": -34.5
+  },
+  {
+   "Metric": "HasCrCard",
+   "Churned": 0.7,
+   "Retained": 0.71,
+   "Diff_%": -1.4
+  }
+ ],
+ "geo_gender": [
+  {
+   "Geography": "France",
+   "Female": 20.34,
+   "Male": 12.71
+  },
+  {
+   "Geography": "Germany",
+   "Female": 37.55,
+   "Male": 27.81
+  },
+  {
+   "Geography": "Spain",
+   "Female": 21.21,
+   "Male": 13.11
+  }
+ ],
+ "geo_age": [
+  {
+   "Geography": "France",
+   "<30": 5.2,
+   "30-45": 11.9,
+   "46-60": 45.8,
+   "60+": 19.9
+  },
+  {
+   "Geography": "Germany",
+   "<30": 12.6,
+   "30-45": 25.3,
+   "46-60": 67.3,
+   "60+": 38.9
+  },
+  {
+   "Geography": "Spain",
+   "<30": 7.9,
+   "30-45": 12.5,
+   "46-60": 40.7,
+   "60+": 20.8
+  }
+ ],
+ "salary_quartiles": [
+  {
+   "Segment": "Q1 (lowest)",
+   "Customers": 2500,
+   "Churned": 500,
+   "ChurnRate": 20.0,
+   "ShareOfCustomers": 25.0,
+   "ContributionToChurn": 24.55,
+   "RelativeRisk": 0.98
+  },
+  {
+   "Segment": "Q2",
+   "Customers": 2500,
+   "Churned": 495,
+   "ChurnRate": 19.8,
+   "ShareOfCustomers": 25.0,
+   "ContributionToChurn": 24.3,
+   "RelativeRisk": 0.97
+  },
+  {
+   "Segment": "Q3",
+   "Customers": 2500,
+   "Churned": 503,
+   "ChurnRate": 20.12,
+   "ShareOfCustomers": 25.0,
+   "ContributionToChurn": 24.69,
+   "RelativeRisk": 0.99
+  },
+  {
+   "Segment": "Q4 (highest)",
+   "Customers": 2500,
+   "Churned": 539,
+   "ChurnRate": 21.56,
+   "ShareOfCustomers": 25.0,
+   "ContributionToChurn": 26.46,
+   "RelativeRisk": 1.06
+  }
+ ],
+ "activity_balance": [
+  {
+   "ActivityStatus": "Active",
+   "Zero balance": 9.6,
+   "Low balance": 16.5,
+   "High balance": 17.3
+  },
+  {
+   "ActivityStatus": "Inactive",
+   "Zero balance": 18.3,
+   "Low balance": 32.0,
+   "High balance": 31.2
+  }
+ ],
+ "credit_card": [
+  {
+   "Segment": "Has card",
+   "Customers": 7055,
+   "Churned": 1424,
+   "ChurnRate": 20.18,
+   "ShareOfCustomers": 70.55,
+   "ContributionToChurn": 69.91,
+   "RelativeRisk": 0.99
+  },
+  {
+   "Segment": "No card",
+   "Customers": 2945,
+   "Churned": 613,
+   "ChurnRate": 20.81,
+   "ShareOfCustomers": 29.45,
+   "ContributionToChurn": 30.09,
+   "RelativeRisk": 1.02
+  }
+ ],
+ "high_value": {
+  "threshold": 127644.24,
+  "customers": 2500,
+  "churned": 592,
+  "churn_rate": 23.68,
+  "balance_lost": 88654932.44,
+  "share_of_total_churned_balance": 47.76973038962871,
+  "salary_churned_hv": 101078.4004391892,
+  "salary_retained_hv": 100522.75255241091,
+  "avg_balance_churned_all": 91108.53933726068,
+  "avg_balance_retained_all": 72745.2967788522,
+  "by_geo": [
+   {
+    "Segment": "France",
+    "Customers": 1056,
+    "Churned": 214,
+    "ChurnRate": 20.27,
+    "ShareOfCustomers": 42.24,
+    "ContributionToChurn": 36.15,
+    "RelativeRisk": 0.86
+   },
+   {
+    "Segment": "Germany",
+    "Customers": 944,
+    "Churned": 274,
+    "ChurnRate": 29.03,
+    "ShareOfCustomers": 37.76,
+    "ContributionToChurn": 46.28,
+    "RelativeRisk": 1.23
+   },
+   {
+    "Segment": "Spain",
+    "Customers": 500,
+    "Churned": 104,
+    "ChurnRate": 20.8,
+    "ShareOfCustomers": 20.0,
+    "ContributionToChurn": 17.57,
+    "RelativeRisk": 0.88
+   }
+  ],
+  "by_activity": [
+   {
+    "Segment": "Active",
+    "Customers": 1253,
+    "Churned": 212,
+    "ChurnRate": 16.92,
+    "ShareOfCustomers": 50.12,
+    "ContributionToChurn": 35.81,
+    "RelativeRisk": 0.71
+   },
+   {
+    "Segment": "Inactive",
+    "Customers": 1247,
+    "Churned": 380,
+    "ChurnRate": 30.47,
+    "ShareOfCustomers": 49.88,
+    "ContributionToChurn": 64.19,
+    "RelativeRisk": 1.29
+   }
+  ],
+  "inactive_share_of_hv_churn": 64.1891891891892
+ },
+ "top_risk_combos": [
+  {
+   "Geography": "Germany",
+   "AgeGroup": "46-60",
+   "ActivityStatus": "Inactive",
+   "n": 276,
+   "churned": 223,
+   "rate": 80.8
+  },
+  {
+   "Geography": "Spain",
+   "AgeGroup": "46-60",
+   "ActivityStatus": "Inactive",
+   "n": 166,
+   "churned": 105,
+   "rate": 63.3
+  },
+  {
+   "Geography": "France",
+   "AgeGroup": "46-60",
+   "ActivityStatus": "Inactive",
+   "n": 345,
+   "churned": 210,
+   "rate": 60.9
+  },
+  {
+   "Geography": "Germany",
+   "AgeGroup": "46-60",
+   "ActivityStatus": "Active",
+   "n": 226,
+   "churned": 115,
+   "rate": 50.9
+  },
+  {
+   "Geography": "France",
+   "AgeGroup": "46-60",
+   "ActivityStatus": "Active",
+   "n": 404,
+   "churned": 133,
+   "rate": 32.9
+  },
+  {
+   "Geography": "Germany",
+   "AgeGroup": "30-45",
+   "ActivityStatus": "Inactive",
+   "n": 770,
+   "churned": 236,
+   "rate": 30.6
+  },
+  {
+   "Geography": "Spain",
+   "AgeGroup": "46-60",
+   "ActivityStatus": "Active",
+   "n": 230,
+   "churned": 56,
+   "rate": 24.3
+  },
+  {
+   "Geography": "Germany",
+   "AgeGroup": "60+",
+   "ActivityStatus": "Active",
+   "n": 82,
+   "churned": 19,
+   "rate": 23.2
+  }
+ ],
+ "models": {
+  "Logistic Regression": {
+   "auc": 0.7871808205687874,
+   "cv_auc": 0.7690862015640193,
+   "recall": 0.7210216110019646,
+   "precision": 0.39675675675675676,
+   "threshold": 0.5
+  },
+  "Gradient Boosting": {
+   "auc": 0.8760581753450447,
+   "cv_auc": 0.8647527748189253,
+   "recall": 0.6620825147347741,
+   "precision": 0.6310861423220974,
+   "threshold": 0.3
+  }
+ },
+ "feature_importance": {
+  "Age": 0.1298,
+  "NumOfProducts": 0.1221,
+  "IsActiveMember": 0.0304,
+  "Balance": 0.0301,
+  "Geography_Germany": 0.0218,
+  "Gender_Male": 0.0083,
+  "CreditScore": 0.0019,
+  "Tenure": 0.0001,
+  "HasCrCard": -0.0001,
+  "Geography_Spain": -0.0003,
+  "EstimatedSalary": -0.0016
+ }
+}
